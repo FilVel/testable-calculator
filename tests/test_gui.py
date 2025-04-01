@@ -16,7 +16,14 @@ class CalculatorGUITestCase(unittest.TestCase):
 
     def tearDown(self):
         self.app.stop()
-    
+
+EXPECTED_BUTTON_NAMES = { '7', '8', '9', '/', '4', '5', '6', '*', '1', '2', '3', '-', '.', '0', '=', '+' }
+
+class TestAllButtonsExist(CalculatorGUITestCase):
+    def test_all_buttons_exist(self):
+        for button in EXPECTED_BUTTON_NAMES:
+            with self.subTest(button_name=button):
+                self.press_button(button)
 
 class TestExpressions(CalculatorGUITestCase):
     def test_integer_expression(self):
