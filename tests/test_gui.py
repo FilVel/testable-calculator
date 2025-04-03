@@ -9,7 +9,10 @@ class CalculatorGUITestCase(unittest.TestCase):
         self.app._run_prepare()
 
     def press_button(self, button_text):
-        self.app.find_button_by(button_text).trigger_action()
+        button = self.app.find_button_by(button_text)
+        if button is None:
+            raise AssertionError(f"Missing button: {button_text}")
+        button.trigger_action()
 
     def assert_display(self, value):
         self.assertEqual(self.app.display.text, value)   
@@ -17,7 +20,7 @@ class CalculatorGUITestCase(unittest.TestCase):
     def tearDown(self):
         self.app.stop()
 
-EXPECTED_BUTTON_NAMES = { '7', '8', '9', '/', '4', '5', '6', '*', '1', '2', '3', '-', '.', '0', '=', '+' }
+EXPECTED_BUTTON_NAMES = { '7', '8', '9', '/', '4', '5', '6', '*', '1', '2', '3', '-', '.', '0', '=', '+', '(', ')', '^', '√' }
 
 class TestAllButtonsExist(CalculatorGUITestCase):
     def test_all_buttons_exist(self):
@@ -43,3 +46,57 @@ class TestExpressions(CalculatorGUITestCase):
         self.assert_display("1.2+2")
         self.press_button("=")
         self.assert_display("3.2")
+
+    def test_complex_equation(self):
+        # test that (1+2)*3 == 9 
+        self.press_button("(")
+        self.assert_display("(")
+        self.press_button("1")
+        self.assert_display("(1")
+        self.press_button("+")
+        self.assert_display("(1+")
+        self.press_button("2")
+        self.assert_display("(1+2")
+        self.press_button(")")
+        self.assert_display("(1+2)")
+        self.press_button("*")
+        self.assert_display("(1+2)*")
+        self.press_button("3")
+        self.assert_display("(1+2)*3")
+        self.press_button("=")
+        self.assert_display("9")
+    
+    def test_sqrt_expression(self):
+        # test that sqrt(5-1) - 1 == 1
+        self.press_button("√")
+        self.assert_display("√(")
+        self.press_button("5")
+        self.assert_display("√(5")
+        self.press_button("-")
+        self.press_button("1")
+        self.press_button(")")
+        self.assert_display("√(5-1)")
+        self.press_button("-")
+        self.assert_display("√(5-1)-")
+        self.press_button("1")
+        self.assert_display("√(5-1)-1")
+        self.press_button("=")
+        self.assert_display("1.0")
+
+    def test_power_expression(self):
+        # test that (4 / 2) ** (5 - 1) == 16
+        self.press_button("(")
+        self.press_button("4")
+        self.press_button("/")
+        self.press_button("2")
+        self.press_button(")")
+        self.assert_display("(4/2)")
+        self.press_button("^") # ^ is the symbol for power that we wanna have in our GUI
+        self.assert_display("(4/2)^(")
+        self.press_button("5")
+        self.press_button("-")
+        self.press_button("1")
+        self.press_button(")")
+        self.assert_display("(4/2)^(5-1)")
+        self.press_button("=")
+        self.assert_display("16.0")
