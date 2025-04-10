@@ -66,6 +66,17 @@ class TestCalculatorUsage(unittest.TestCase):
             self.calculator.compute_result()
         self.assertEqual("Invalid expression: 1+", str(context.exception))
 
+    def test_clear(self):
+        self.calculator.digit(1)
+        self.assertEqual("1", self.calculator.expression)
+        self.calculator.clear()
+        self.assertEqual("", self.calculator.expression)
+    
+    def test_no_two_digits_at_once(self):
+        with self.assertRaises(ValueError):
+            self.calculator.digit(12)
+    
+
 class TestComplexExpressions(unittest.TestCase):
     def setUp(self):
         self.calculator = Calculator()
