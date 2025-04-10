@@ -12,7 +12,7 @@ class Calculator:
         if isinstance(value, str):
             value = int(value)
         if value not in range(10):
-            raise ValueError("Value must a digit in [0, 9]: " + value)
+            raise ValueError(f"Value must a digit in [0, 9]:  {value}")
         return value
 
     def _append(self, value):
@@ -55,7 +55,7 @@ class Calculator:
     def compute_result(self) -> Number:
         try:
             result = eval(self.expression)
-            if isinstance(result, Number):
+            if isinstance(result, int) or isinstance(result, float):
                 self.expression = str(result)
                 return result
             else:
